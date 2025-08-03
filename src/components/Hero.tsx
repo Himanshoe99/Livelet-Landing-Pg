@@ -1,108 +1,177 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
-import LottieAnimation from "./LottieAnimation";
+"use client"
+
+import { useEffect, useRef } from "react"
+import { ArrowRight, Play } from "lucide-react"
+import LottieAnimation from "./LottieAnimation"
+
+const ParticleBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    const particles: Array<{
+      x: number
+      y: number
+      vx: number
+      vy: number
+      size: number
+      opacity: number
+      color: string
+    }> = []
+
+    const colors = ["#06b6d4", "#3b82f6", "#8b5cf6"]
+
+    // Create particles
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 3 + 1,
+        opacity: Math.random() * 0.3 + 0.1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      })
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      particles.forEach((particle) => {
+        particle.x += particle.vx
+        particle.y += particle.vy
+
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1
+
+        ctx.beginPath()
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+        ctx.fillStyle = particle.color
+        ctx.globalAlpha = particle.opacity
+        ctx.fill()
+      })
+
+      requestAnimationFrame(animate)
+    }
+
+    animate()
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
+}
 
 const Hero = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [lottieData, setLottieData] = useState<any>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const elements = entry.target.querySelectorAll(".fade-in-element")
+            elements.forEach((el, index) => {
+              setTimeout(() => {
+                el.classList.add("animate-fade-in")
+              }, index * 200)
+            })
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-  useEffect(() => {
-    fetch('/loop-header.lottie')
-      .then(response => response.json())
-      .then(data => setLottieData(data))
-      .catch(error => console.error("Error loading Lottie animation:", error));
-  }, []);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
 
-  useEffect(() => {
-    if (isMobile) return;
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const elements = document.querySelectorAll('.parallax');
-      elements.forEach(el => {
-        const element = el as HTMLElement;
-        const speed = parseFloat(element.dataset.speed || '0.1');
-        const yPos = -scrollY * speed;
-        element.style.setProperty('--parallax-y', `${yPos}px`);
-      });
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobile]);
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current)
+      }
+    }
+  }, [])
 
   return (
     <section
-      className="overflow-hidden relative bg-cover bg-center min-h-screen flex items-center justify-center"
-      id="hero"
-      style={{
-        backgroundImage: 'url("/Header-background.webp")',
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
-        padding: isMobile ? '100px 12px 40px' : '120px 20px 60px',
-      }}
+      className="relative min-h-screen flex items-center justify-center bg-gray-900 overflow-hidden"
+      ref={sectionRef}
     >
-      <div className="absolute -top-[10%] -right-[5%] w-1/2 h-[70%] bg-pulse-gradient opacity-20 blur-3xl rounded-full"></div>
-      <div className="container px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center" ref={containerRef}>
-        <div className="w-full flex flex-col items-center justify-center text-center">
-          <h1
-            className="section-title font-extrabold text-4xl sm:text-6xl lg:text-7xl xl:text-8xl leading-tight opacity-0 animate-fade-in"
-            style={{ animationDelay: "0.3s" }}
-          >
-            Livelet: Collaborative<br className="hidden sm:inline" />Code Editor
-          </h1>
-          <p
-            style={{ animationDelay: "0.5s" }}
-            className="section-subtitle mt-6 mb-8 leading-relaxed opacity-0 animate-fade-in text-gray-950 font-normal text-xl sm:text-2xl lg:text-3xl text-center"
-          >
-            The collaborative coding space that evolves with your team’s workflow.
-          </p>
-          <div
-            className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in justify-center"
-            style={{ animationDelay: "0.7s" }}
-          >
-            <a
-              href="#get-access"
-              className="flex items-center justify-center group w-full sm:w-auto text-center"
-              style={{
-                backgroundColor: '#FE5C02',
-                borderRadius: '1440px',
-                boxSizing: 'border-box',
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                fontSize: '18px',
-                lineHeight: '24px',
-                padding: '20px 32px',
-                border: '1px solid white',
-              }}
-            >
-              Code Together
-              <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </a>
+      {/* Animated Background */}
+      <div className="animated-bg"></div>
+      <ParticleBackground />
+
+      {/* Background decorative elements */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div
+        className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+        style={{ animationDelay: "1s" }}
+      ></div>
+      <div
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-3xl animate-pulse"
+        style={{ animationDelay: "2s" }}
+      ></div>
+
+      <div className="section-container text-center relative z-10">
+        <div className="max-w-5xl mx-auto">
+          {/* Badge */}
+          <div className="mb-8 opacity-0 fade-in-element">
+            <span className="pulse-chip">✨ Real-time collaborative coding platform</span>
           </div>
-          {lottieData && (
-            <div className="relative z-10 animate-fade-in mt-10" style={{ animationDelay: "0.9s" }}>
-              <LottieAnimation
-                animationPath={lottieData}
-                className="w-full h-auto max-w-lg mx-auto"
-                loop={true}
-                autoplay={true}
-              />
+
+          {/* Main Heading */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 opacity-0 fade-in-element">
+            <span className="bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent">
+              Code Together,
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+              Build Faster
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed opacity-0 fade-in-element">
+            Experience seamless real-time collaboration with live code editing, instant execution, and intelligent
+            features that make coding together feel natural.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 opacity-0 fade-in-element">
+            <button className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium py-4 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-cyan-500/25 transform hover:scale-105 active:scale-95 animate-button-pulse">
+              Start Coding Now
+              <ArrowRight className="ml-2 w-5 h-5 inline transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
+
+          {/* Lottie Animation */}
+          <div className="relative max-w-4xl mx-auto opacity-0 fade-in-element">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50 bg-gray-800/30 backdrop-blur-sm">
+              <LottieAnimation />
+              {/* Overlay gradient for better integration */}
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none"></div>
             </div>
-          )}
+          </div>
         </div>
       </div>
-      <div className="hidden lg:block absolute bottom-0 left-1/4 w-64 h-64 bg-pulse-100/30 rounded-full blur-3xl -z-10 parallax" data-speed="0.05"></div>
     </section>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero
