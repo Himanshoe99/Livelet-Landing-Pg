@@ -22,8 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
 
 node_modules/
 .env
 *.log
 
+=======
+>>>>>>> a5ce94ddaf2b546361a3a3afcf465a381e843a18
