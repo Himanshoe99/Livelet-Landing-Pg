@@ -6,7 +6,6 @@ import HumanoidSection from "@/components/HumanoidSection";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import Testimonials from "@/components/Testimonials";
-import MadeByHumans from "@/components/MadeByHumans";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -64,7 +63,6 @@ const Index = () => {
         <HowItWorks />
         <Features />
         <Testimonials />
-        <MadeByHumans />
       </main>
       <Footer />
     </div>
