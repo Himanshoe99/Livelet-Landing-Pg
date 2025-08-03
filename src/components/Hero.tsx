@@ -137,7 +137,7 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 opacity-0 fade-in-element">
-            <span className="bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparen">
               Code Together,
             </span>
             <br />
