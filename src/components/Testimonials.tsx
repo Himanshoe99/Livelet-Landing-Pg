@@ -151,19 +151,26 @@ const Testimonials = () => {
         {/* Main Testimonial Display */}
         <div className="relative max-w-4xl mx-auto">
           {/* Navigation Buttons */}
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group"
-          >
-            <ChevronLeft className="w-6 h-6 transition-transform group-hover:-translate-x-0.5" />
-          </button>
-
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group"
-          >
-            <ChevronRight className="w-6 h-6 transition-transform group-hover:translate-x-0.5" />
-          </button>
+            <div className="flex justify-between items-center absolute top-1/2 left-[-4.5rem] right-[-4.5rem] -translate-y-1/2 w-[calc(100%+9rem)] pointer-events-none">
+              <div className="flex items-center h-full">
+              <button
+                onClick={prevTestimonial}
+                className="pointer-events-auto z-10 w-14 h-14 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group"
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="w-7 h-7" />
+              </button>
+              </div>
+              <div className="flex items-center h-full">
+              <button
+                onClick={nextTestimonial}
+                className="pointer-events-auto z-10 w-14 h-14 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="w-7 h-7" />
+              </button>
+              </div>
+            </div>
 
           {/* Testimonial Cards */}
           <div className="relative overflow-hidden">
